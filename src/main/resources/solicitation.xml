@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hallym.solicitation">
+	<select id="selectUserInfo" resultType="com.hallym.vo.userVO">
+        SELECT * FROM user WHERE user_id = #{user_id} and user_pw = #{user_pw} and user_ip = #{user_ip} and gr = #{gr}
+    </select>
+    
+    <select id="selectUserInfo2" resultType="com.hallym.vo.userVO">
+        SELECT * FROM user WHERE user_id = #{user_id}
+    </select>
+    
+    <select id="selectUserInfo3" resultType="com.hallym.vo.userVO">
+        SELECT * FROM user WHERE user_ip = #{user_ip}
+    </select>
+    
+    <select id="selectUserInfo4" resultType="com.hallym.vo.userVO">
+        SELECT * FROM user WHERE gr = #{gr}
+    </select>
+    
+    <select id="selectInterview" resultType="com.hallym.vo.interviewVO">
+        SELECT * FROM interview WHERE eval_no = #{eval_no}
+    </select>
+    
+    <select id="selectTarget" resultType="com.hallym.vo.targetVO">
+        SELECT * FROM target WHERE name = #{name} and dept = #{dept} and pn = #{pn} and email = #{email} and register=#{register}
+    </select>
+    
+    <select id="selectTargetNo" resultType="com.hallym.vo.targetVO">
+        SELECT target_no FROM target WHERE name = #{name} and email = #{email}
+    </select>
+    
+    <select id="suitable" resultType="com.hallym.vo.evaluationVO">
+        SELECT a.*, b.dept, b.pn, b.email, b.name
+        FROM evaluation a 
+        LEFT OUTER JOIN target b ON a.target_no = b.target_no
+        WHERE a.interview_id1 = #{user_id} or a.interview_id2 = #{user_id} or a.interview_id3 = #{user_id}
+    </select>
+    
+    <select id="search2" resultType="com.hallym.vo.evaluationVO">
+        SELECT a.*, b.dept, b.pn, b.email, b.name
+        FROM evaluation a 
+        LEFT OUTER JOIN target b ON a.target_no = b.target_no
+        WHERE (a.interview_id1 = #{user_id} or a.interview_id2 = #{user_id} or a.interview_id3 = #{user_id}) and b.name like CONCAT('%', #{name}, '%');
+    </select>
+    
+    <select id="search" resultType="com.hallym.vo.evaluationVO">
+        SELECT a.*, b.dept, b.pn, b.email, b.name
+        FROM evaluation a 
+        LEFT OUTER JOIN target b ON a.target_no = b.target_no
+        WHERE b.name like CONCAT('%', #{name}, '%')
+    </select>
+    
+    <select id="selectAllUser" resultType="com.hallym.vo.userVO">
+        SELECT user_id FROM user WHERE user_id != 'root' 
+    </select>
+    
+    <select id="selectAllTarget" resultType="com.hallym.vo.targetVO">
+        SELECT * FROM target
+    </select>
+    
+    <select id="selectEval" resultType="com.hallym.vo.evaluationVO">
+        SELECT * from evaluation where target_no = #{target_no}
+    </select>
+    
+    <select id="selectTargetInfo" resultType="com.hallym.vo.evaluationVO">
+        SELECT a.*, b.dept, b.pn, b.email, b.name, b.register
+        from evaluation a
+        left outer join target b on b.target_no = a.target_no 
+        where a.target_no = #{target_no}
+    </select>
+    
+    <insert id="signUp" parameterType="com.hallym.vo.userVO"> 
+        INSERT INTO user (user_id, user_pw, user_ip, gr) VALUES (#{user_id}, #{user_pw}, #{user_ip}, #{gr}) 
+    </insert>
+    
+    <insert id="insertTarget" parameterType="com.hallym.vo.targetVO"> 
+        INSERT INTO target (name, dept, pn, email, register) VALUES (#{name}, #{dept}, #{pn}, #{email}, #{register})
+    </insert>
+    
+    <insert id="insertInterview" parameterType="com.hallym.vo.targetVO"> 
+        INSERT INTO interview (eval_no, interview_id) VALUES (#{eval_no}, #{interview_id})
+    </insert>
+    
+    <insert id="insertEval" parameterType="com.hallym.vo.evaluationVO"> 
+        INSERT INTO
+        evaluation (target_no, eval_score1_1, eval_score1_2, eval_score1_3, eval_score2_1, eval_score2_2, eval_score2_3, eval_score3_1, eval_score3_2, eval_score3_3, eval_image1, eval_image2, eval_image3, interview_id1, interview_id2, interview_id3, eval_score1_4, eval_score2_4, eval_score3_4) 
+        VALUES (#{target_no} ,#{eval_score1_1},  #{eval_score1_2}, #{eval_score1_3}, #{eval_score2_1}, #{eval_score2_2}, #{eval_score2_3}, #{eval_score3_1}, #{eval_score3_2}, #{eval_score3_3}, #{eval_image1}, #{eval_image2}, #{eval_image3}, #{interview_id1}, #{interview_id2}, #{interview_id3}, #{eval_score1_4}, #{eval_score2_4}, #{eval_score3_4})
+    </insert>
+    
+    <update id="modifyInfo" parameterType="com.hallym.vo.userVO">
+		UPDATE user
+		SET user_pw = #{user_pw}
+		WHERE user_id = #{user_id}
+	</update>
+	
+	<update id="updateTarget" parameterType="com.hallym.vo.targetVO">
+		UPDATE target
+		SET dept = #{dept}, pn = #{pn}, email=#{email}, register=#{register}
+		WHERE target_no = #{target_no}
+	</update>
+	
+	<update id="updateEval" parameterType="com.hallym.vo.evaluationVO">
+		UPDATE evaluation
+		SET eval_score1_1 = #{eval_score1_1},  eval_score1_2 = #{eval_score1_2}, eval_score1_3 = #{eval_score1_3}, eval_score2_1 = #{eval_score2_1}, eval_score2_2 = #{eval_score2_2}, eval_score2_3 = #{eval_score2_3}, eval_score3_1 = #{eval_score3_1}, eval_score3_2 = #{eval_score3_2}, eval_score3_3 = #{eval_score3_3}, eval_image1 = #{eval_image1}, eval_image2 = #{eval_image2}, eval_image3 = #{eval_image3}, interview_id1 = #{interview_id1}, interview_id2 = #{interview_id2}, interview_id3 = #{interview_id3}, eval_score1_4 = #{eval_score1_4}, eval_score2_4 = #{eval_score2_4}, eval_score3_4 = #{eval_score3_4}
+		WHERE target_no = #{target_no}
+	</update>
+	
+	<update id="updateInterview1" parameterType="com.hallym.vo.interviewVO">
+		UPDATE interview
+		SET check1 = #{check1}
+		WHERE eval_no = #{eval_no} and interview_id = #{interview_id}
+	</update>
+	
+	<update id="updateInterview2" parameterType="com.hallym.vo.interviewVO">
+		UPDATE interview
+		SET check2 = #{check2}
+		WHERE eval_no = #{eval_no} and interview_id = #{interview_id}
+	</update>
+	
+	<update id="updateInterview3" parameterType="com.hallym.vo.interviewVO">
+		UPDATE interview
+		SET check3 = #{check3}
+		WHERE eval_no = #{eval_no} and interview_id = #{interview_id}
+	</update>
+	
+	<delete id="deleteInterview"> 
+        DELETE FROM interview WHERE eval_no = #{eval_no}
+    </delete> 
+</mapper>
